@@ -878,6 +878,16 @@ itemBases["Secured Wraps"] = {
 	armour = { Evasion = 79, EnergyShield = 30, },
 	req = { level = 80, dex = 55, int = 55, },
 }
+itemBases["Fists of Stone"] = {
+	type = "Gloves",
+	subType = "Evasion/Energy Shield",
+	quality = 20,
+	socketLimit = 3,
+	tags = { armour = true, default = true, dex_int_armour = true, gloves = true, },
+	implicitModTypes = { },
+	armour = { Evasion = 231, EnergyShield = 77, },
+	req = { },
+}
 
 itemBases["Grand Manchettes"] = {
 	type = "Gloves",
