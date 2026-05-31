@@ -1004,8 +1004,47 @@ function ImportTabClass:ImportItemsAndSkills(charData)
 	return charData -- For the wrapper
 end
 
-local rarityMap = { [0] = "NORMAL", "MAGIC", "RARE", "UNIQUE", [9] = "RELIC", [10] = "RELIC" }
+local rarityMap = { [0] = "NORMAL", "MAGIC", "RARE", "UNIQUE", [9] = "RELIC", [10] = "RELIC", [13] = "RARE" }
+local rarityNameMap = { Normal = "NORMAL", Magic = "MAGIC", Rare = "RARE", Unique = "UNIQUE", Relic = "RELIC" }
 local slotMap = { ["Weapon"] = "Weapon 1", ["Offhand"] = "Weapon 2", ["Weapon2"] = "Weapon 1 Swap", ["Offhand2"] = "Weapon 2 Swap", ["Helm"] = "Helmet", ["BodyArmour"] = "Body Armour", ["Gloves"] = "Gloves", ["Boots"] = "Boots", ["Amulet"] = "Amulet", ["Ring"] = "Ring 1", ["Ring2"] = "Ring 2", ["Ring3"] = "Ring 3", ["Belt"] = "Belt", ["IncursionArmLeft"] = "Arm 2", ["IncursionArmRight"] = "Arm 1", ["IncursionLegLeft"] = "Leg 2", ["IncursionLegRight"] = "Leg 1" }
+
+local importBaseNameReplacements = {
+	{ "^Runeforged ", "" },
+}
+
+local function getImportRarity(itemData)
+	local rarity = rarityMap[itemData.frameType]
+	if rarity then
+		return rarity
+	end
+	local rarityName = itemData.rarity or itemData.frameTypeId
+	if rarityName then
+		return rarityNameMap[tostring(rarityName):gsub("^Runic", "")]
+	end
+end
+
+local function getImportBaseName(baseName, itemBases)
+	for _, replacement in ipairs(importBaseNameReplacements) do
+		local importBaseName = baseName:gsub(replacement[1], replacement[2])
+		if importBaseName ~= baseName and itemBases[importBaseName] then
+			return importBaseName
+		end
+	end
+
+	if itemBases[baseName] then
+		return baseName
+	end
+
+	return baseName
+end
+
+local function getImportPropertyName(propertyName)
+	propertyName = escapeGGGString(propertyName)
+	if propertyName == "Runic Ward" then
+		return "Ward"
+	end
+	return propertyName
+end
 
 function ImportTabClass:ImportItem(itemData, slotName)
 	if not slotName then
@@ -1029,7 +1068,7 @@ function ImportTabClass:ImportItem(itemData, slotName)
 	local item = new("Item")
 
 	-- Determine rarity, display name and base type of the item
-	item.rarity = rarityMap[itemData.frameType]
+	item.rarity = getImportRarity(itemData)
 	if #itemData.name > 0 then
 		item.title = sanitiseText(itemData.name)
 		item.baseName = sanitiseText(itemData.typeLine):gsub("Synthesised ","")
@@ -1038,6 +1077,8 @@ function ImportTabClass:ImportItem(itemData, slotName)
 			-- Hack for Two-Toned Boots
 			item.baseName = "Two-Toned Boots (Armour/Energy Shield)"
 		end
+		item.baseName = getImportBaseName(item.baseName, self.build.data.itemBases)
+		item.name = item.title .. ", " .. item.baseName
 		item.base = self.build.data.itemBases[item.baseName]
 		if item.base then
 			item.type = item.base.type
@@ -1095,29 +1136,30 @@ function ImportTabClass:ImportItem(itemData, slotName)
 	end
 	if itemData.properties then
 		for _, property in pairs(itemData.properties) do
-			if escapeGGGString(property.name) == "Quality" then
+			local propertyName = getImportPropertyName(property.name)
+			if propertyName == "Quality" then
 				item.quality = tonumber(property.values[1][1]:match("%d+"))
-			elseif property.name == "Radius" then
+			elseif propertyName == "Radius" then
 				item.jewelRadiusLabel = property.values[1][1]
-			elseif property.name == "Limited to" then
+			elseif propertyName == "Limited to" then
 				item.limit = tonumber(property.values[1][1])
-			elseif property.name == "Evasion Rating" then
+			elseif propertyName == "Evasion Rating" then
 				if item.baseName == "Two-Toned Boots (Armour/Energy Shield)" then
 					-- Another hack for Two-Toned Boots
 					item.baseName = "Two-Toned Boots (Armour/Evasion)"
 					item.base = self.build.data.itemBases[item.baseName]
 				end
-			elseif property.name == "Energy Shield" then
+			elseif propertyName == "Energy Shield" then
 				if item.baseName == "Two-Toned Boots (Armour/Evasion)" then
 					-- Yet another hack for Two-Toned Boots
 					item.baseName = "Two-Toned Boots (Evasion/Energy Shield)"
 					item.base = self.build.data.itemBases[item.baseName]
 				end
 			end
-			if property.name == "Energy Shield" or property.name == "Ward" or property.name == "Armour" or property.name == "Evasion Rating" then
+			if propertyName == "Energy Shield" or propertyName == "Ward" or propertyName == "Armour" or propertyName == "Evasion Rating" then
 				item.armourData = item.armourData or { }
 				for _, value in ipairs(property.values) do
-					item.armourData[property.name:gsub(" Rating", ""):gsub(" ", "")] = (item.armourData[property.name:gsub(" Rating", ""):gsub(" ", "")] or 0) + tonumber(value[1])
+					item.armourData[propertyName:gsub(" Rating", ""):gsub(" ", "")] = (item.armourData[propertyName:gsub(" Rating", ""):gsub(" ", "")] or 0) + tonumber(value[1])
 				end
 			end
 		end
