@@ -42,6 +42,8 @@ src/Data/TimelessJewelData/*.bin
 
 # Simplegraphic Debugging
 runtime/imgui.ini
+runtime-ko/imgui.ini
 
 
 src/poe_api_response.json
+stat-weight-reports/
