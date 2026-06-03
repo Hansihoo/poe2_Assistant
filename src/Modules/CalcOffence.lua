@@ -65,6 +65,21 @@ end })
 local globalOutput = nil
 local globalBreakdown = nil
 
+local function getTotalAttackTime(activeSkill, cfg)
+	local skillModList = activeSkill.skillModList
+	local totalAttackTime = skillModList:Sum("BASE", cfg, "TotalAttackTime")
+
+	if activeSkill.skillTypes[SkillType.SupportedByHollowForm] and activeSkill.activeEffect.grantedEffect.id == "WhirlingAssaultPlayer" then
+		for _, value in ipairs(skillModList:Tabulate("BASE", cfg, "TotalAttackTime")) do
+			if value.mod.source == "Skill:WhirlingAssaultPlayer" then
+				totalAttackTime = totalAttackTime - value.value
+			end
+		end
+	end
+
+	return totalAttackTime
+end
+
 local function calcConvertedDamage(activeSkill, output, cfg, damageType)
 	local skillModList = activeSkill.skillModList
 	-- Calculate conversions
@@ -2821,7 +2836,7 @@ function calcs.offence(env, actor, activeSkill)
 			if skillFlags.warcry then
 				output.Speed = 1 / output.WarcryCastTime
 			else
-				output.Speed = 1 / (baseTime / round((1 + inc/100) * more, 2) + skillModList:Sum("BASE", cfg, "TotalAttackTime") + skillModList:Sum("BASE", cfg, "TotalCastTime"))
+				output.Speed = 1 / (baseTime / round((1 + inc/100) * more, 2) + getTotalAttackTime(activeSkill, cfg) + skillModList:Sum("BASE", cfg, "TotalCastTime"))
 		
 			end
 			output.CastRate = output.Speed
