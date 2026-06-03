@@ -152,6 +152,26 @@ Do not write new `work_*` files into the repository root. Use `work/tmp`,
 `work/trade`, `work/pob`, `work/screenshots`, `work/mcp/tmp`, or
 `work/stat-weight-reports` depending on the output type.
 
+## Cross-Chat Memory
+
+Use `docs/chat-memory.md` to keep a short rolling summary of recent questions,
+answers, decisions, and project flow. It is intended for continuity between
+Codex chat windows, not as a full transcript.
+
+Append a new entry after meaningful work:
+
+```powershell
+.\tools\update-chat-memory.ps1 `
+  -Topic "short topic" `
+  -Question "what the user asked" `
+  -Answer "what was decided or done" `
+  -Files "important files changed" `
+  -Next "next thing to remember"
+```
+
+The file should stay at the latest 150 entries and must not contain secrets,
+tokens, cookies, PoB `Settings.xml`, or private account data.
+
 ## Korean Display Overlay
 
 The Korean overlay is display-only. It keeps PoB's internal build data,

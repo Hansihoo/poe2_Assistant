@@ -28,6 +28,35 @@ If this repo is moved to another computer, update the local Codex
 `poe2-assistant` skill paths to match the new PoB2 checkout and warehouse
 location.
 
+## Chat Memory
+
+- At the start of a new project chat, read `docs/chat-memory.md` after this
+  file to understand recent questions, answers, decisions, and workflow.
+- Keep `docs/chat-memory.md` as a concise rolling memory of conversation flow,
+  not a full transcript.
+- Keep at most the latest 150 entries. Use:
+
+```powershell
+.\tools\update-chat-memory.ps1 -PruneOnly
+```
+
+- After meaningful repo changes, setup decisions, or reusable workflow
+  decisions, append a short entry with:
+
+```powershell
+.\tools\update-chat-memory.ps1 `
+  -Topic "short topic" `
+  -Question "what the user asked" `
+  -Answer "what was decided or done" `
+  -Files "important files changed" `
+  -Next "next thing to remember"
+```
+
+- Do not put secrets, tokens, cookies, PoB `Settings.xml`, or private account
+  data into chat memory.
+- Put reusable POE2 game/build/trade knowledge in the external POE2 warehouse;
+  use chat memory for cross-chat continuity and project decisions.
+
 ## Safety
 
 - Never read, print, commit, or summarize PoB `Settings.xml`.
@@ -64,6 +93,7 @@ location.
 - Stat weights launcher: `PathOfBuilding-PoE2-StatWeights.cmd`
 - Work directory setup: `tools/ensure-workdirs.ps1`
 - Local artifact cleanup: `tools/clean-local-artifacts.ps1`
+- Chat memory updater: `tools/update-chat-memory.ps1`
 - Korean display launcher: `PathOfBuilding-PoE2-KR.cmd`
 - Korean localization notes: `docs/korean-render-localization.md`
 
