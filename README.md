@@ -57,12 +57,12 @@ custom branch:
 
 ```powershell
 git fetch upstream
-git checkout codex/poe2-import-fixes-20260601
+git checkout custom
 git merge upstream/dev
 ```
 
 Keep official changes in `upstream/dev`; keep local assistant/PoB2 changes on a
-custom branch and push that branch to `origin`.
+custom branch such as `custom` and push that branch to `origin`.
 
 ## Setup On Another Computer
 
@@ -71,6 +71,7 @@ custom branch and push that branch to `origin`.
 ```powershell
 git clone https://github.com/Hansihoo/POB2.git
 cd POB2
+git checkout custom
 git remote add upstream https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2.git
 git fetch --all --prune
 git config rerere.enabled true
