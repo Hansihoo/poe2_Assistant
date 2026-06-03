@@ -86,7 +86,15 @@ function ButtonClass:Draw(viewPort, noTooltip)
 		DrawImageQuad(nil, x + width * 0.7, y + height * 0.2, x + width * 0.8, y + height * 0.3, x + width * 0.3, y + height * 0.8, x + width * 0.2, y + height * 0.7)
 	else
 		local overSize = self.overSizeText or 0
-		DrawString(x + width / 2, y + 2 - overSize, "CENTER_X", height - 4 + overSize * 2, "VAR", label)
+		local textHeight = height - 4 + overSize * 2
+		local maxLabelWidth = width - 6
+		if maxLabelWidth < 1 then
+			maxLabelWidth = 1
+		end
+		while textHeight > 10 and DrawStringWidth(textHeight, "VAR", label) > maxLabelWidth do
+			textHeight = textHeight - 1
+		end
+		DrawString(x + width / 2, y + (height - textHeight) / 2, "CENTER_X", textHeight, "VAR", label)
 	end
 	if mOver then
 		if not noTooltip or self.forceTooltip then

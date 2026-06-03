@@ -1,3 +1,197 @@
+# Hansihoo POB2
+
+This repository is Theo/Hansihoo's personal Path of Building-PoE2 fork.
+
+It is not meant to replace the official PoB2 project. The main use is to keep a
+local PoB2 calculation/import engine that Codex can combine with Korean POE2
+assistant notes, trade metadata, current-character snapshots, MCP tools, and
+item-search workflows.
+
+Official upstream:
+[PathOfBuildingCommunity/PathOfBuilding-PoE2](https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2)
+
+Personal fork:
+[Hansihoo/POB2](https://github.com/Hansihoo/POB2)
+
+## Repository Role
+
+This fork keeps:
+
+- official PoB2 source and history;
+- local PoB2 compatibility fixes used by the assistant;
+- the PoB2 MCP bridge in `tools/pob-mcp`;
+- stat-weight tooling for current-character item searches;
+- Korean render-localization source, generators, and notes;
+- Codex project instructions in `AGENTS.md`;
+- documentation for recreating the POE2 assistant context on another computer.
+
+This fork intentionally does not store:
+
+- PoB `Settings.xml`, OAuth tokens, cookies, or account secrets;
+- `src/poe_api_response.json` character API cache;
+- local `work_*` trade/search/debug outputs;
+- `stat-weight-reports/` generated reports;
+- `runtime-ko/` binaries and generated font atlases.
+
+## Git Remote Layout
+
+Use this repository as `origin` and the official project as `upstream`:
+
+```powershell
+git remote add origin https://github.com/Hansihoo/POB2.git
+git remote add upstream https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2.git
+git fetch --all --prune
+git config rerere.enabled true
+```
+
+If this checkout was cloned from the official repo first:
+
+```powershell
+git remote rename origin upstream
+git remote add origin https://github.com/Hansihoo/POB2.git
+git fetch --all --prune
+```
+
+The official default branch is `dev`. To bring official changes into the local
+custom branch:
+
+```powershell
+git fetch upstream
+git checkout codex/poe2-import-fixes-20260601
+git merge upstream/dev
+```
+
+Keep official changes in `upstream/dev`; keep local assistant/PoB2 changes on a
+custom branch and push that branch to `origin`.
+
+## Setup On Another Computer
+
+1. Clone this fork.
+
+```powershell
+git clone https://github.com/Hansihoo/POB2.git
+cd POB2
+git remote add upstream https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2.git
+git fetch --all --prune
+git config rerere.enabled true
+```
+
+2. Configure Codex MCP for the PoB2 bridge.
+
+```json
+{
+  "mcpServers": {
+    "pob2": {
+      "command": "D:\\path\\to\\POB2\\PathOfBuilding-PoE2-MCP.cmd"
+    }
+  }
+}
+```
+
+3. Sync or recreate the POE2 assistant knowledge warehouse.
+
+The current local warehouse lives outside this repo:
+
+```text
+C:\Users\Theo\Documents\0_MD_Data\poe\poe2
+```
+
+At minimum, another computer should provide these files or equivalent files and
+update the local Codex `poe2-assistant` skill paths if the location changes:
+
+- `poe2_assistant_data_warehouse.md`
+- `poe2_codex_assist_skill_notes.md`
+- `poe2_fast_item_weight_scoring.md`
+- `current-character/current_account_profile.md`
+- `current-character/current_character_snapshot.md`
+- `current-character/current_import_status.md`
+- `trade-locale/poe2-trade-locale-data.md`
+- `trade-locale/references/trade-search-guide.md`
+- `trade-locale/data/ko_aliases.json`
+- `trade-locale/data/trade_request_guard.json`
+- `build-calibrations/*.json`
+
+Do not copy secrets, cookies, account tokens, or PoB `Settings.xml` contents
+into the warehouse or this repo.
+
+4. Configure the Codex `poe2-assistant` skill to point at:
+
+```text
+PoB2 project: <this repo path>
+POE2 notes root: <your poe2 warehouse path>
+Trade locale root: <your poe2 warehouse path>\trade-locale
+Current character files: <your poe2 warehouse path>\current-character
+```
+
+5. Use the assistant workflow.
+
+- For current-character analysis, refresh/import the character through local
+  PoB2, then use `PathOfBuilding-PoE2-MCP.cmd`.
+- For item upgrade searches, run `PathOfBuilding-PoE2-StatWeights.cmd`, read
+  `stat-weight-reports/latest.json`, and build official trade weighted-sum
+  filters from the useful stat weights.
+- For live prices, exchange rates, poe.ninja meta, and trade listings, refresh
+  the data and record the snapshot date.
+- For official trade searches, prefer the already logged-in browser trade tab;
+  do not store or read POESESSID/cookies.
+- For Korean POE2 answers, normalize Korean terms to canonical English POE2
+  names/stat IDs, then answer in Korean with assumptions and sources.
+
+## Korean Display Overlay
+
+The Korean overlay is display-only. It keeps PoB's internal build data,
+modifier parser, calculations, and saved builds in English, then translates text
+at render time.
+
+Tracked source files:
+
+- `PathOfBuilding-PoE2-KR.cmd`
+- `src/LaunchKorean.lua`
+- `src/Modules/Localization.lua`
+- `src/Modules/Localization/ko.lua`
+- `src/Modules/Localization/ko_official_generated.lua`
+- `src/Modules/Localization/ko_user.lua`
+- `tools/generate_korean_fonts.py`
+- `tools/generate_official_korean_locale.py`
+- `tools/patches/simplegraphic-unicode-glyphs.patch`
+- `docs/korean-render-localization.md`
+
+`runtime-ko/` is ignored because it contains local binaries and generated font
+atlases. Rebuild or copy a trusted local Korean runtime before using:
+
+```powershell
+python .\tools\generate_official_korean_locale.py
+python .\tools\generate_korean_fonts.py --output .\runtime-ko\SimpleGraphic\Fonts
+```
+
+Then launch with:
+
+```powershell
+.\PathOfBuilding-PoE2-KR.cmd
+```
+
+## Assistant Context To Keep Updated
+
+For future questions to work on any computer, keep these facts current in the
+warehouse, not in chat memory:
+
+- current account, league, character, class, ascendancy, and active build;
+- current gear, skills, passive/tree state, and import status;
+- known PoB2 limitations and local compatibility patches;
+- current build caveats, such as Martial Artist Hollow Form / Whirling Assault
+  / Tempest Bell calculation gaps;
+- measured stat weights and calibration JSON for the active build;
+- Korean aliases, official Korean/English trade stat mappings, and item/base
+  translations;
+- trade-search templates, cooldown/rate-limit guard state, and dated market
+  snapshots;
+- poe.ninja or meta references with dates;
+- reusable decisions from previous POE2 research.
+
+After useful POE2 work, write reusable information to a Markdown or JSON file in
+the warehouse. If the destination is unclear, append a short dated note to
+`poe2_assistant_learning_log.md`.
+
 # Path of Building 2 Community
 ## Welcome to Path of Building 2, an offline build planner for Path of Exile 2!
 

@@ -7,6 +7,8 @@ inspect.lua
 
 # Development files
 *.lnk
+*.pyc
+__pycache__/
 
 # Application files
 Builds/
@@ -43,7 +45,12 @@ src/Data/TimelessJewelData/*.bin
 # Simplegraphic Debugging
 runtime/imgui.ini
 runtime-ko/imgui.ini
+runtime-ko/
 
 
 src/poe_api_response.json
 stat-weight-reports/
+
+# Local POE2 assistant scratch/output files
+work/
+work_*
