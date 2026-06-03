@@ -65,11 +65,31 @@ end })
 local globalOutput = nil
 local globalBreakdown = nil
 
+local function isHollowFormWhirling(activeSkill)
+	return activeSkill.skillTypes[SkillType.SupportedByHollowForm] and activeSkill.activeEffect.grantedEffect.id == "WhirlingAssaultPlayer"
+end
+
+local function getHollowFormAttackSpeedMultiplier(activeSkill)
+	if not isHollowFormWhirling(activeSkill) then
+		return nil
+	end
+	local hollowFormLevel = 1
+	for _, supportEffect in ipairs(activeSkill.supportList or { }) do
+		if supportEffect.grantedEffect and supportEffect.grantedEffect.id == "SupportHollowFormPlayer" then
+			hollowFormLevel = supportEffect.level
+			break
+		end
+	end
+	local levels = data.skills.MetaHollowFormPlayer and data.skills.MetaHollowFormPlayer.levels
+	local level = levels and (levels[hollowFormLevel] or levels[1])
+	return level and level.attackSpeedMultiplier
+end
+
 local function getTotalAttackTime(activeSkill, cfg)
 	local skillModList = activeSkill.skillModList
 	local totalAttackTime = skillModList:Sum("BASE", cfg, "TotalAttackTime")
 
-	if activeSkill.skillTypes[SkillType.SupportedByHollowForm] and activeSkill.activeEffect.grantedEffect.id == "WhirlingAssaultPlayer" then
+	if isHollowFormWhirling(activeSkill) then
 		for _, value in ipairs(skillModList:Tabulate("BASE", cfg, "TotalAttackTime")) do
 			if value.mod.source == "Skill:WhirlingAssaultPlayer" then
 				totalAttackTime = totalAttackTime - value.value
@@ -2730,8 +2750,9 @@ function calcs.offence(env, actor, activeSkill)
 		else
 			local baseTime
 			if isAttack then
-				if skillData.attackSpeedMultiplier and source.AttackRate then
-					source.AttackRate = source.AttackRate * (1 + skillData.attackSpeedMultiplier / 100)
+				local attackSpeedMultiplier = getHollowFormAttackSpeedMultiplier(activeSkill) or skillData.attackSpeedMultiplier
+				if attackSpeedMultiplier and source.AttackRate then
+					source.AttackRate = source.AttackRate * (1 + attackSpeedMultiplier / 100)
 				end
 				if skillData.castTimeOverridesAttackTime then
 					-- Skill is overriding weapon attack speed
