@@ -85,6 +85,54 @@ local function getHollowFormAttackSpeedMultiplier(activeSkill)
 	return level and level.attackSpeedMultiplier
 end
 
+local hollowFormWhirlingRateSources = {
+	["Skill:SupportHollowFormPlayer"] = true,
+	["Skill:WhirlingAssaultPlayer"] = true,
+}
+
+local function shouldIgnoreHollowFormWhirlingRateMod(activeSkill, mod)
+	return isHollowFormWhirling(activeSkill) and mod and hollowFormWhirlingRateSources[mod.source]
+end
+
+local function getSpeedBase(activeSkill, cfg)
+	if not isHollowFormWhirling(activeSkill) then
+		return activeSkill.skillModList:Sum("BASE", cfg, "Speed")
+	end
+	local total = 0
+	for _, value in ipairs(activeSkill.skillModList:Tabulate("BASE", cfg, "Speed")) do
+		if not shouldIgnoreHollowFormWhirlingRateMod(activeSkill, value.mod) then
+			total = total + value.value
+		end
+	end
+	return total
+end
+
+local function getSpeedInc(activeSkill, cfg)
+	if not isHollowFormWhirling(activeSkill) then
+		return activeSkill.skillModList:Sum("INC", cfg, "Speed")
+	end
+	local total = 0
+	for _, value in ipairs(activeSkill.skillModList:Tabulate("INC", cfg, "Speed")) do
+		if not shouldIgnoreHollowFormWhirlingRateMod(activeSkill, value.mod) then
+			total = total + value.value
+		end
+	end
+	return total
+end
+
+local function getSpeedMore(activeSkill, cfg)
+	if not isHollowFormWhirling(activeSkill) then
+		return activeSkill.skillModList:More(cfg, "Speed")
+	end
+	local more = 1
+	for _, value in ipairs(activeSkill.skillModList:Tabulate("MORE", cfg, "Speed")) do
+		if not shouldIgnoreHollowFormWhirlingRateMod(activeSkill, value.mod) then
+			more = more * (1 + value.value / 100)
+		end
+	end
+	return round(more, 2)
+end
+
 local function getTotalAttackTime(activeSkill, cfg)
 	local skillModList = activeSkill.skillModList
 	local totalAttackTime = skillModList:Sum("BASE", cfg, "TotalAttackTime")
@@ -2758,14 +2806,14 @@ function calcs.offence(env, actor, activeSkill)
 					-- Skill is overriding weapon attack speed
 					baseTime = activeSkill.activeEffect.grantedEffect.castTime / (1 + (source.AttackSpeedInc or 0) / 100)
 				elseif calcLib.mod(skillModList, skillCfg, "SkillAttackTime") > 0 then
-					baseTime = (1 / ( source.AttackRate or 1 ) + skillModList:Sum("BASE", cfg, "Speed")) * calcLib.mod(skillModList, skillCfg, "SkillAttackTime")
+					baseTime = (1 / ( source.AttackRate or 1 ) + getSpeedBase(activeSkill, cfg)) * calcLib.mod(skillModList, skillCfg, "SkillAttackTime")
 				else
-					baseTime = 1 / ( source.AttackRate or 1 ) + skillModList:Sum("BASE", cfg, "Speed")
+					baseTime = 1 / ( source.AttackRate or 1 ) + getSpeedBase(activeSkill, cfg)
 				end
 			else
 				baseTime = skillData.castTimeOverride or activeSkill.activeEffect.grantedEffect.castTime or 1
 			end
-			local more = skillModList:More(cfg, "Speed")
+			local more = getSpeedMore(activeSkill, cfg)
 			output.Repeats = globalOutput.Repeats or 1
 
 			--Calculates the max number of trauma stacks you can sustain
@@ -2852,7 +2900,7 @@ function calcs.offence(env, actor, activeSkill)
 			if skillModList:Sum("BASE", skillCfg, "Multiplier:TraumaStacks") == 0 then
 				skillModList:NewMod("Multiplier:TraumaStacks", "BASE", skillModList:Sum("BASE", skillCfg, "Multiplier:SustainableTraumaStacks"), "Maximum Sustainable Trauma Stacks")
 			end
-			local inc = skillModList:Sum("INC", cfg, "Speed")
+			local inc = getSpeedInc(activeSkill, cfg)
 			
 			if skillFlags.warcry then
 				output.Speed = 1 / output.WarcryCastTime

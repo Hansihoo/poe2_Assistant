@@ -40,3 +40,14 @@ def test_hollow_form_whirling_uses_hollow_form_attack_speed_multiplier() -> None
         r"or skillData\.attackSpeedMultiplier",
         text,
     )
+
+
+def test_hollow_form_whirling_rate_ignores_socketed_skill_speed_mods() -> None:
+    text = (ROOT / "src" / "Modules" / "CalcOffence.lua").read_text()
+
+    assert '["Skill:SupportHollowFormPlayer"] = true' in text
+    assert '["Skill:WhirlingAssaultPlayer"] = true' in text
+    assert "shouldIgnoreHollowFormWhirlingRateMod" in text
+    assert re.search(r"local more = getSpeedMore\(activeSkill,\s*cfg\)", text)
+    assert re.search(r"local inc = getSpeedInc\(activeSkill,\s*cfg\)", text)
+    assert re.search(r"getSpeedBase\(activeSkill,\s*cfg\)", text)
