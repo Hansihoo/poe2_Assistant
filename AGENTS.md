@@ -33,11 +33,28 @@ location.
 - Never read, print, commit, or summarize PoB `Settings.xml`.
 - Never store OAuth tokens, cookies, POESESSID, account secrets, or browser
   session data in this repo.
-- Do not commit `src/poe_api_response.json`, `stat-weight-reports/`,
-  `runtime-ko/`, or `work_*` files.
+- Do not commit `src/poe_api_response.json`, generated `work/` contents,
+  legacy root `stat-weight-reports/`, legacy root `work_*` files, or
+  `runtime-ko/`.
 - For official trade searches, prefer the user's already logged-in browser tab.
   Do not use direct trade search/fetch API calls unless the user explicitly asks
   and accepts rate-limit/account risk.
+
+## Local Output Policy
+
+- Put every local test, trade, PoB comparison, MCP scratch, screenshot, and
+  generated report under `work/`.
+- Use `work/stat-weight-reports/latest.json` for stat-weight output.
+- Use `work/trade/` for trade search/fetch snapshots.
+- Use `work/pob/` for temporary XML/build comparison outputs.
+- Use `work/screenshots/` for local screenshots.
+- Use `work/tmp/` for one-off scratch files.
+- Use `work/mcp/tmp/` for MCP request/response scratch files.
+- Do not create new root-level `work_*` files.
+- Before deleting local artifacts, preview with
+  `.\tools\clean-local-artifacts.ps1 -WhatIf`; then run
+  `.\tools\clean-local-artifacts.ps1`.
+- Use `.\tools\ensure-workdirs.ps1` to recreate the standard `work/` subfolders.
 
 ## Local Tools
 
@@ -45,6 +62,8 @@ location.
 - MCP server source: `tools/pob-mcp/server.js`
 - MCP usage notes: `tools/pob-mcp/README.md`
 - Stat weights launcher: `PathOfBuilding-PoE2-StatWeights.cmd`
+- Work directory setup: `tools/ensure-workdirs.ps1`
+- Local artifact cleanup: `tools/clean-local-artifacts.ps1`
 - Korean display launcher: `PathOfBuilding-PoE2-KR.cmd`
 - Korean localization notes: `docs/korean-render-localization.md`
 

@@ -495,7 +495,7 @@ function StatWeightReport.Generate(options)
 
 	local outputDir = options.outputDir
 	if not outputDir or outputDir == "" then
-		outputDir = "stat-weight-reports"
+		outputDir = "work/stat-weight-reports"
 	end
 	MakeDir(outputDir)
 

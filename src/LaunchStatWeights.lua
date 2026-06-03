@@ -13,7 +13,7 @@ local originalOnFrame = launch.OnFrame
 local reportStarted = false
 
 local function writeFailure(errMsg)
-	local outDir = os.getenv("POB_STAT_OUTPUT_DIR") or "stat-weight-reports"
+	local outDir = os.getenv("POB_STAT_OUTPUT_DIR") or "work/stat-weight-reports"
 	MakeDir(outDir)
 	local path = outDir .. "/latest-error.txt"
 	local f = io.open(path, "w")
@@ -40,7 +40,7 @@ function launch:OnFrame(...)
 		local report = LoadModule("Modules/StatWeightReport")
 		return report.Generate({
 			inputPath = os.getenv("POB_STAT_INPUT"),
-			outputDir = os.getenv("POB_STAT_OUTPUT_DIR"),
+			outputDir = os.getenv("POB_STAT_OUTPUT_DIR") or "work/stat-weight-reports",
 			mainSkill = os.getenv("POB_STAT_MAIN_SKILL"),
 			dpsMetric = os.getenv("POB_STAT_DPS_METRIC"),
 			calibrationPath = os.getenv("POB_STAT_CALIBRATION"),

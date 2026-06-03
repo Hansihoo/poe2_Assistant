@@ -9,6 +9,7 @@ inspect.lua
 *.lnk
 *.pyc
 __pycache__/
+.pytest_cache/
 
 # Application files
 Builds/
@@ -52,5 +53,6 @@ src/poe_api_response.json
 stat-weight-reports/
 
 # Local POE2 assistant scratch/output files
-work/
+/work/*
+!/work/README.md
 work_*

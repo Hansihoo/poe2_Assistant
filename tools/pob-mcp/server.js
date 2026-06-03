@@ -3,7 +3,6 @@
 
 const childProcess = require("child_process");
 const fs = require("fs");
-const os = require("os");
 const path = require("path");
 
 const repoRoot = path.resolve(__dirname, "..", "..");
@@ -12,6 +11,8 @@ const defaultBridge = path.join(repoRoot, "src", "LaunchMcpBridge.lua");
 const defaultCache = path.join(repoRoot, "src", "poe_api_response.json");
 const defaultStatWeightsCmd = path.join(repoRoot, "PathOfBuilding-PoE2-StatWeights.cmd");
 const defaultStatWeightsLauncher = path.join(repoRoot, "src", "LaunchStatWeights.lua");
+const defaultWorkDir = process.env.POB2_WORK_DIR || path.join(repoRoot, "work");
+const defaultStatWeightOutputDir = path.join(defaultWorkDir, "stat-weight-reports");
 
 const SERVER_INFO = {
   name: "pob2-mcp",
@@ -211,7 +212,7 @@ const TOOLS = [
         },
         outputDir: {
           type: "string",
-          description: "Directory for latest.json/latest.md. Defaults to stat-weight-reports.",
+          description: "Directory for latest.json/latest.md. Defaults to work/stat-weight-reports.",
         },
         mainSkill: { type: "string" },
         dpsMetric: { type: "string", default: "CombinedDPS" },
@@ -223,7 +224,9 @@ const TOOLS = [
 ];
 
 function makeTempPaths() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pob-mcp-"));
+  const tmpRoot = process.env.POB_MCP_TMP_DIR || path.join(defaultWorkDir, "mcp", "tmp");
+  fs.mkdirSync(tmpRoot, { recursive: true });
+  const dir = fs.mkdtempSync(path.join(tmpRoot, "pob-mcp-"));
   return {
     dir,
     requestPath: path.join(dir, "request.json"),
@@ -364,8 +367,9 @@ async function runBridge(tool, args = {}) {
 async function runStatWeights(args = {}) {
   const runtimePath = process.env.POB_MCP_RUNTIME || defaultRuntime;
   const launcherPath = process.env.POB_STAT_WEIGHTS_LAUNCHER || defaultStatWeightsLauncher;
-  const outputDir = args.outputDir || path.join(repoRoot, "stat-weight-reports");
+  const outputDir = args.outputDir || process.env.POB_STAT_OUTPUT_DIR || defaultStatWeightOutputDir;
   const inputPath = args.inputPath || defaultCache;
+  fs.mkdirSync(outputDir, { recursive: true });
   const env = {
     ...process.env,
     POB_STAT_INPUT: inputPath,

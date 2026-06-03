@@ -40,7 +40,10 @@ No npm install is required. The server is dependency-free Node.js.
 - `pob_set_state`: `mode=sandbox` behaves like simulation. `mode=commit`
   writes XML only when `outputPath` is explicitly supplied.
 - `pob_stat_weights`: runs `PathOfBuilding-PoE2-StatWeights.cmd` and returns
-  `stat-weight-reports/latest.json`.
+  `work/stat-weight-reports/latest.json`.
+
+MCP request/output scratch files are written under `work/mcp/tmp` by default.
+Set `POB_MCP_TMP_DIR` if you need a different temporary directory.
 
 ## Common State Sections
 

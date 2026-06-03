@@ -29,8 +29,9 @@ This fork intentionally does not store:
 
 - PoB `Settings.xml`, OAuth tokens, cookies, or account secrets;
 - `src/poe_api_response.json` character API cache;
-- local `work_*` trade/search/debug outputs;
-- `stat-weight-reports/` generated reports;
+- local generated contents under `work/`;
+- legacy root `work_*` trade/search/debug outputs;
+- legacy root `stat-weight-reports/` generated reports;
 - `runtime-ko/` binaries and generated font atlases.
 
 ## Git Remote Layout
@@ -129,7 +130,7 @@ Current character files: <your poe2 warehouse path>\current-character
 - For current-character analysis, refresh/import the character through local
   PoB2, then use `PathOfBuilding-PoE2-MCP.cmd`.
 - For item upgrade searches, run `PathOfBuilding-PoE2-StatWeights.cmd`, read
-  `stat-weight-reports/latest.json`, and build official trade weighted-sum
+  `work/stat-weight-reports/latest.json`, and build official trade weighted-sum
   filters from the useful stat weights.
 - For live prices, exchange rates, poe.ninja meta, and trade listings, refresh
   the data and record the snapshot date.
@@ -137,6 +138,19 @@ Current character files: <your poe2 warehouse path>\current-character
   do not store or read POESESSID/cookies.
 - For Korean POE2 answers, normalize Korean terms to canonical English POE2
   names/stat IDs, then answer in Korean with assumptions and sources.
+
+6. Keep local generated outputs in `work/`.
+
+```powershell
+.\tools\ensure-workdirs.ps1
+.\tools\clean-local-artifacts.ps1 -WhatIf
+.\tools\clean-local-artifacts.ps1
+.\tools\ensure-workdirs.ps1
+```
+
+Do not write new `work_*` files into the repository root. Use `work/tmp`,
+`work/trade`, `work/pob`, `work/screenshots`, `work/mcp/tmp`, or
+`work/stat-weight-reports` depending on the output type.
 
 ## Korean Display Overlay
 
