@@ -59,3 +59,11 @@ Use:
 - A: Created this rolling chat memory file and a PowerShell updater that appends concise entries while pruning to the latest 150.
 - Files: `docs/chat-memory.md`, `tools/update-chat-memory.ps1`, `AGENTS.md`.
 - Next: Read this file at the start of future project chats and update it after meaningful decisions or repo changes.
+
+<!-- CHAT_MEMORY_ENTRY -->
+## 2026-06-03 - Repository Rename
+
+- Q: The user said POB2 did not match the project and asked to rename the repository toward poe2_Assistant.
+- A: Renamed the GitHub repository from Hansihoo/POB2 to Hansihoo/poe2_Assistant, updated local origin, and updated project docs to use the new repository name.
+- Files: README.md, AGENTS.md, docs/chat-memory.md
+- Next: Use https://github.com/Hansihoo/poe2_Assistant.git as the personal fork URL; official PoB2 remains upstream.

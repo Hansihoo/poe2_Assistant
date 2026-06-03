@@ -1,4 +1,4 @@
-# Hansihoo POB2 Codex Notes
+# poe2_Assistant Codex Notes
 
 This repository is Theo/Hansihoo's personal fork of
 `PathOfBuildingCommunity/PathOfBuilding-PoE2`.
@@ -102,7 +102,7 @@ build data, item parser, calculations, or saved build files.
 
 ## Git
 
-- `origin` should point to `https://github.com/Hansihoo/POB2.git`.
+- `origin` should point to `https://github.com/Hansihoo/poe2_Assistant.git`.
 - `upstream` should point to
   `https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2.git`.
 - The official default branch is `upstream/dev`.

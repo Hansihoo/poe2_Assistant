@@ -1,4 +1,4 @@
-# Hansihoo POB2
+# poe2_Assistant
 
 This repository is Theo/Hansihoo's personal Path of Building-PoE2 fork.
 
@@ -11,7 +11,7 @@ Official upstream:
 [PathOfBuildingCommunity/PathOfBuilding-PoE2](https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2)
 
 Personal fork:
-[Hansihoo/POB2](https://github.com/Hansihoo/POB2)
+[Hansihoo/poe2_Assistant](https://github.com/Hansihoo/poe2_Assistant)
 
 ## Repository Role
 
@@ -39,7 +39,7 @@ This fork intentionally does not store:
 Use this repository as `origin` and the official project as `upstream`:
 
 ```powershell
-git remote add origin https://github.com/Hansihoo/POB2.git
+git remote add origin https://github.com/Hansihoo/poe2_Assistant.git
 git remote add upstream https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2.git
 git fetch --all --prune
 git config rerere.enabled true
@@ -49,7 +49,7 @@ If this checkout was cloned from the official repo first:
 
 ```powershell
 git remote rename origin upstream
-git remote add origin https://github.com/Hansihoo/POB2.git
+git remote add origin https://github.com/Hansihoo/poe2_Assistant.git
 git fetch --all --prune
 ```
 
@@ -70,8 +70,8 @@ custom branch such as `custom` and push that branch to `origin`.
 1. Clone this fork.
 
 ```powershell
-git clone https://github.com/Hansihoo/POB2.git
-cd POB2
+git clone https://github.com/Hansihoo/poe2_Assistant.git
+cd poe2_Assistant
 git checkout custom
 git remote add upstream https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2.git
 git fetch --all --prune
@@ -84,7 +84,7 @@ git config rerere.enabled true
 {
   "mcpServers": {
     "pob2": {
-      "command": "D:\\path\\to\\POB2\\PathOfBuilding-PoE2-MCP.cmd"
+      "command": "D:\\path\\to\\poe2_Assistant\\PathOfBuilding-PoE2-MCP.cmd"
     }
   }
 }
