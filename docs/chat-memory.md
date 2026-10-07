@@ -67,3 +67,11 @@ Use:
 - A: Renamed the GitHub repository from Hansihoo/POB2 to Hansihoo/poe2_Assistant, updated local origin, and updated project docs to use the new repository name.
 - Files: README.md, AGENTS.md, docs/chat-memory.md
 - Next: Use https://github.com/Hansihoo/poe2_Assistant.git as the personal fork URL; official PoB2 remains upstream.
+
+<!-- CHAT_MEMORY_ENTRY -->
+## 2026-10-07 - Node Power cache correctness backport
+
+- Q: Backport upstream PR #2559 onto custom without the #2557 performance refactor.
+- A: Added the upstream context cache key (type, attribute flag, weapon set, radius jewel membership) to add/remove and the shared cluster-node cache. Added 18 focused PowerBuilder regression cases; all 39 focused/PassiveSpec/TreeTab tests pass. Before the fix, 17 of the new cases fail.
+- Files: src/Classes/CalcsTab.lua, spec/System/TestCalcsTab_spec.lua, docs/chat-memory.md.
+- Next: Keep this isolated from #2557; tests use a deterministic calculator to exercise the real PowerBuilder cache.
